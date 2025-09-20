@@ -1,0 +1,55 @@
+import React, { useState, useEffect } from "react";
+
+function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState("");
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("todos")) || [];
+    setTodos(saved);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = () => {
+    if(input.trim() !== "") {
+      setTodos([...todos, { text: input, done: false }]);
+      setInput("");
+    }
+  };
+
+  const toggleDone = (index) => {
+    const newTodos = [...todos];
+    newTodos[index].done = !newTodos[index].done;
+    setTodos(newTodos);
+  };
+
+  const removeTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos.splice(index,1);
+    setTodos(newTodos);
+  };
+
+  return (
+    <div>
+      <h1>Todo App</h1>
+      <input value={input} onChange={(e)=>setInput(e.target.value)} placeholder="Add new task"/>
+      <button onClick={addTodo}>Add</button>
+      <ul>
+        {todos.map((todo,index) => (
+          <li key={index}>
+            <span style={{textDecoration: todo.done ? "line-through" : "none"}} onClick={()=>toggleDone(index)}>
+              {todo.text}
+            </span>
+            <button onClick={()=>removeTodo(index)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoApp;
+
